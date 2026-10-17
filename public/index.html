@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doom's Decryption: Strike & Decipher | DJS SIGAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="doom-theme">
+  <!-- Background ambiance & grid scanlines -->
+  <div class="cyber-overlay"></div>
+  <div class="scanlines"></div>
+  <div class="particle-canvas-wrap"><canvas id="bgParticles"></canvas></div>
+
+  <!-- Main Container -->
+  <div class="app-container">
+
+    <!-- Header Section -->
+    <header class="doom-header">
+      <div class="header-top">
+        <div class="sigai-badge">
+          <span class="glow-dot"></span>
+          <span>DJS SIGAI // SPECIAL PROTOCOL</span>
+        </div>
+        <div class="header-controls">
+          <button id="soundToggleBtn" class="btn-hud btn-icon" title="Toggle Audio FX">
+            <span id="soundIcon">🔊</span> <span class="btn-label">FX: ON</span>
+          </button>
+          <a href="leaderboard.html" target="_blank" class="btn-hud">
+            <span>🏆 LEADERBOARD</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-title-wrap">
+        <div class="doom-crest">
+          <!-- Doctor Doom Mask SVG Symbol -->
+          <svg viewBox="0 0 100 100" class="doom-mask-svg">
+            <polygon points="50,5 88,25 82,75 50,95 18,75 12,25" fill="none" stroke="#10b981" stroke-width="2.5" filter="url(#glow)"/>
+            <!-- Eye Slits -->
+            <polygon points="30,42 45,45 43,51 28,47" fill="#10b981" />
+            <polygon points="70,42 55,45 57,51 72,47" fill="#10b981" />
+            <!-- Rivets and Brow -->
+            <path d="M26,34 Q50,40 74,34" stroke="#10b981" stroke-width="2" fill="none"/>
+            <path d="M40,58 L50,66 L60,58" stroke="#10b981" stroke-width="2" fill="none"/>
+            <!-- Mouth Vent Lines -->
+            <line x1="43" y1="73" x2="43" y2="83" stroke="#10b981" stroke-width="1.5" />
+            <line x1="50" y1="72" x2="50" y2="85" stroke="#10b981" stroke-width="1.5" />
+            <line x1="57" y1="73" x2="57" y2="83" stroke="#10b981" stroke-width="1.5" />
+            <defs>
+              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+          </svg>
+        </div>
+        <div class="title-content">
+          <div class="theme-tag">AVENGERS: DOOMSDAY // THEME EVENT</div>
+          <h1 class="glitch-text" data-text="DOOM'S DECRYPTION">DOOM'S DECRYPTION</h1>
+          <div class="sub-title">STRIKE & DECIPHER THE MULTIVERSE PROTOCOLS</div>
+        </div>
+      </div>
+
+      <!-- Instructions & Points Banner -->
+      <div class="mission-briefing">
+        <div class="briefing-header">
+          <span class="briefing-tag">MISSION OBJECTIVE</span>
+          <span class="rule-highlight">15 MINUTES ENCRYPTION LOCK</span>
+        </div>
+        <div class="rules-grid">
+          <div class="rule-item">
+            <span class="r-num">1</span>
+            <span class="r-desc"><strong>Two Competing Letters:</strong> Each active cell contains two letters split diagonally.</span>
+          </div>
+          <div class="rule-item">
+            <span class="r-num">2</span>
+            <span class="r-desc"><strong>Strike Out the Noise:</strong> Click to draw a strike through the false letter and preserve the real one.</span>
+          </div>
+          <div class="rule-item">
+            <span class="r-num">3</span>
+            <span class="r-desc"><strong>Words Across & Down:</strong> The surviving letters form 16 secret meaningful words (>= 3 letters, no 2-letter words).</span>
+          </div>
+          <div class="rule-item scoring-rule">
+            <span class="r-num">⭐</span>
+            <div class="r-desc points-table">
+              <div><strong>0 Errors:</strong> <span class="pts-badge pts-15">+15 PTS</span></div>
+              <div><strong>1-5 Errors:</strong> <span class="pts-badge pts-10">+10 PTS</span></div>
+              <div><strong>6-8 Errors:</strong> <span class="pts-badge pts-5">+5 PTS</span></div>
+              <div><strong>>8 Errors:</strong> <span class="pts-badge pts-0">+0 PTS</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Game HUD: Active Team Status & Timer -->
+    <div id="gameHud" class="game-hud">
+      <div class="hud-card team-status-card">
+        <div class="hud-label">ACTIVE UNIT</div>
+        <div class="team-display">
+          <span id="activeTeamName" class="team-name-text">NOT REGISTERED</span>
+          <button id="changeTeamBtn" class="btn-text-link">[Switch Unit]</button>
+        </div>
+      </div>
+
+      <div class="hud-card timer-card">
+        <div class="hud-label">DOOMSDAY COUNTDOWN</div>
+        <div id="timerDisplay" class="timer-value">15:00</div>
+        <div class="timer-progress-bar">
+          <div id="timerProgress" class="timer-bar-fill"></div>
+        </div>
+      </div>
+
+      <div class="hud-card progress-card">
+        <div class="hud-label">DECIPHERED CELLS</div>
+        <div class="progress-counts">
+          <span id="struckCount" class="highlight-val">0</span> / <span id="totalActiveCount">59</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div id="decipherProgress" class="decipher-bar-fill"></div>
+        </div>
+      </div>
+
+      <div class="hud-card action-card">
+        <button id="submitBtn" class="btn-doom-primary" disabled>
+          <span class="btn-icon-submit">⚡</span>
+          <span>TRANSMIT DECRYPTION</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Workspace: Crossword Grid + Decrypted Words Panel -->
+    <main class="workspace-grid">
+      <!-- Puzzle Board Column -->
+      <section class="board-section">
+        <div class="board-header">
+          <div class="board-title">
+            <span class="pulse-indicator"></span>
+            <span>LATVERIAN QUANTUM CIPHER MATRIX (10x10)</span>
+          </div>
+          <div class="board-legend">
+            <span class="legend-item"><span class="legend-box active-sample"></span> Solved Letter</span>
+            <span class="legend-item"><span class="legend-box struck-sample"></span> Struck Noise</span>
+            <span class="legend-item"><span class="legend-box barrier-sample"></span> Void Barrier</span>
+          </div>
+        </div>
+
+        <div class="grid-wrapper">
+          <div id="puzzleGrid" class="puzzle-grid">
+            <!-- Rendered by app.js: 10 rows x 10 cols -->
+          </div>
+        </div>
+
+        <div class="board-footer-tip">
+          <span>💡 <strong>Control Protocol:</strong> Click on either the Top-Left or Bottom-Right letter inside a square to strike out the unwanted letter. Click again to undo or change.</span>
+        </div>
+      </section>
+
+      <!-- Secret Words Tracker Column -->
+      <aside class="tracker-section">
+        <div class="tracker-header">
+          <span class="tracker-title">16 CLASSIFIED PROTOCOLS</span>
+          <span id="wordsDecryptedCounter" class="badge-counter">0 / 16 READY</span>
+        </div>
+        <p class="tracker-sub">Letters across and down must decrypt into these 16 words:</p>
+        
+        <div id="wordListGrid" class="words-grid">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+
+        <!-- Latverian System Diagnostics Box -->
+        <div class="system-terminal">
+          <div class="term-header">// DOOM_CORE_DIAGNOSTICS</div>
+          <div id="termLog" class="term-body">
+            <p>> Awaiting operative authentication...</p>
+            <p>> Grid power levels: NOMINAL (59 active nodes)</p>
+            <p>> Target frequency: DJS SIGAI PROTOCOL</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="doom-footer">
+      <div class="footer-brand">DJS SIGAI COMMITTEE • AVENGERS: DOOMSDAY EDITION</div>
+      <div class="footer-note">Designed for DJS SIGAI Event • "Doom's Decryption: Strike & Decipher"</div>
+    </footer>
+  </div>
+
+  <!-- Team Login / Registration Modal -->
+  <div id="loginModal" class="modal-backdrop show">
+    <div class="modal-panel doom-panel">
+      <div class="modal-header">
+        <div class="modal-badge">OPERATIVE AUTHENTICATION</div>
+        <h2>ENTER DOOMSDAY PROTOCOL</h2>
+        <p>Register your Team Unit to initiate the 15-minute decryption matrix.</p>
+      </div>
+
+      <form id="teamLoginForm" class="modal-form">
+        <div class="form-group">
+          <label for="teamNameInput">TEAM NAME <span class="required-star">*</span></label>
+          <input type="text" id="teamNameInput" class="doom-input" placeholder="e.g. Victor Squad / Quantum Avengers" required autocomplete="off" />
+        </div>
+
+        <div class="form-group">
+          <label for="membersInput">TEAM MEMBERS (Optional)</label>
+          <input type="text" id="membersInput" class="doom-input" placeholder="e.g. Tony, Reed, Bruce, Wanda" autocomplete="off" />
+        </div>
+
+        <div class="modal-warning-box">
+          <span class="warn-icon">⚠️</span>
+          <span><strong>ATTENTION:</strong> Once you engage the matrix, the 15-minute countdown starts immediately. Your unit gets one attempt.</span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" id="startMissionBtn" class="btn-doom-primary btn-block">
+            <span>INITIALIZE MATRIX & START TIMER</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Results / Completion Modal -->
+  <div id="resultModal" class="modal-backdrop">
+    <div class="modal-panel doom-panel result-panel">
+      <div class="result-header">
+        <div id="resultBadge" class="result-badge">TRANSMISSION COMPLETE</div>
+        <h2 id="resultTitle">CODE DECIPHERED</h2>
+      </div>
+
+      <div class="score-hero">
+        <div class="score-circle">
+          <div id="resultPoints" class="score-number">+15</div>
+          <div class="score-label">POINTS</div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-label">CORRECT NODES</span>
+          <span id="resultCorrect" class="stat-val text-green">59 / 59</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">ERRORS / NOISE</span>
+          <span id="resultErrors" class="stat-val text-red">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">TIME TAKEN</span>
+          <span id="resultTime" class="stat-val text-cyan">04:32</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">OFFICIAL STATUS</span>
+          <span id="resultGrade" class="stat-val text-gold">ALL WORDS CLEAR</span>
+        </div>
+      </div>
+
+      <div class="result-words-summary">
+        <div class="summary-title">VERIFIED WORDS REVEALED:</div>
+        <div id="revealedWordsList" class="summary-tags">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="modal-actions result-actions">
+        <a href="leaderboard.html" target="_blank" class="btn-doom-primary">
+          <span>VIEW LIVE LEADERBOARD</span>
+        </a>
+        <button id="closeResultModalBtn" class="btn-hud">
+          <span>INSPECT SOLVED GRID</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio elements generated via Web Audio API -->
+  <script src="app.js"></script>
+</body>
+</html>

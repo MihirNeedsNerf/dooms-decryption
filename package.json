@@ -1,0 +1,14 @@
+{
+  "name": "dooms-decryption",
+  "version": "1.0.0",
+  "description": "Doom's Decryption: Strike & Decipher mini-game for DJS SIGAI event (Avengers: Doomsday theme)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test_unit.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
