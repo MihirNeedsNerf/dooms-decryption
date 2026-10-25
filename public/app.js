@@ -138,7 +138,6 @@
 
     function animate() {
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = 'rgba(16, 185, 129, ';
       particles.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
@@ -164,10 +163,9 @@
   const sfx = new SoundFX();
   let currentTeam = null;
   let activeCellsData = {};
-  let wordsData = [];
   let userAnswers = {}; // key: 'r,c' => chosen surviving letter
   let totalActive = 59;
-  let timeLimitSeconds = 15 * 60;
+  let timeLimitSeconds = 10 * 60; // 10 MINUTES
   let timeRemaining = timeLimitSeconds;
   let timerInterval = null;
   let isTimerStarted = false;
@@ -176,7 +174,9 @@
   // DOM Elements
   const soundToggleBtn = document.getElementById('soundToggleBtn');
   const soundIcon = document.getElementById('soundIcon');
+  const viewRulesBtn = document.getElementById('viewRulesBtn');
   const loginModal = document.getElementById('loginModal');
+  const rulesModal = document.getElementById('rulesModal');
   const resultModal = document.getElementById('resultModal');
   const teamLoginForm = document.getElementById('teamLoginForm');
   const teamNameInput = document.getElementById('teamNameInput');
@@ -189,9 +189,10 @@
   const decipherProgress = document.getElementById('decipherProgress');
   const submitBtn = document.getElementById('submitBtn');
   const puzzleGrid = document.getElementById('puzzleGrid');
-  const wordListGrid = document.getElementById('wordListGrid');
   const termLog = document.getElementById('termLog');
   const closeResultModalBtn = document.getElementById('closeResultModalBtn');
+  const rulesConfirmCheckbox = document.getElementById('rulesConfirmCheckbox');
+  const startTimerBtn = document.getElementById('startTimerBtn');
 
   // Terminal logging utility
   function logTerminal(msg, type = 'info') {
@@ -212,6 +213,21 @@
     sfx.playClick();
   });
 
+  // View Rules Button in Header (Allows reviewing rules during the game)
+  viewRulesBtn.addEventListener('click', () => {
+    if (isTimerStarted) {
+      rulesConfirmCheckbox.checked = true;
+      startTimerBtn.disabled = false;
+      startTimerBtn.querySelector('span').textContent = 'RESUME DECRYPTION MATRIX';
+    } else {
+      rulesConfirmCheckbox.checked = false;
+      startTimerBtn.disabled = true;
+      startTimerBtn.querySelector('span').textContent = '⚡ OK — ENGAGE 10-MINUTE TIMER';
+    }
+    rulesModal.classList.add('show');
+    sfx.playClick();
+  });
+
   // Switch / Change Team
   changeTeamBtn.addEventListener('click', () => {
     if (isSubmitted) {
@@ -222,6 +238,23 @@
     sfx.playClick();
   });
 
+  // Checkbox toggle in Rules Modal
+  rulesConfirmCheckbox.addEventListener('change', () => {
+    startTimerBtn.disabled = !rulesConfirmCheckbox.checked;
+    sfx.playClick();
+  });
+
+  // Start 10-Minute Timer Button in Rules Modal
+  startTimerBtn.addEventListener('click', () => {
+    rulesModal.classList.remove('show');
+    sfx.playClick();
+
+    if (!isTimerStarted && !isSubmitted) {
+      startTimer();
+      logTerminal('10-Minute Countdown Matrix ENGAGED.', 'warn');
+    }
+  });
+
   // Fetch Puzzle Definitions from Backend
   async function loadPuzzleData() {
     try {
@@ -229,13 +262,12 @@
       const data = await res.json();
       if (data.success) {
         activeCellsData = data.activeCells;
-        wordsData = data.words;
         totalActive = data.totalActive || 59;
-        timeLimitSeconds = data.timeLimitSeconds || 900;
+        timeLimitSeconds = data.timeLimitSeconds || 600;
         timeRemaining = timeLimitSeconds;
 
         renderGrid();
-        renderWordsList();
+        updateTimerDisplay();
         logTerminal(`Matrix loaded: 100 sectors initialized (${totalActive} active)`);
       }
     } catch (err) {
@@ -330,9 +362,10 @@
       return;
     }
 
-    // Start timer on first interaction if not yet started
     if (!isTimerStarted) {
-      startTimer();
+      // Require reviewing rules first!
+      rulesModal.classList.add('show');
+      return;
     }
 
     // Toggle: if clicked the already selected letter, unstrike
@@ -342,13 +375,13 @@
       otherEl.classList.remove('struck');
       cellEl.classList.remove('deciphered');
       sfx.playClick();
-      logTerminal(`Sector [${coord}]: selection cleared`);
+      logTerminal(`Sector [${coord}]: Selection cleared`);
     } else {
       // Choose selectedLetter as survivor, strike out otherLetter
       userAnswers[coord] = selectedLetter;
       applySelection(cellEl, selectedEl, otherEl);
       sfx.playStrike();
-      logTerminal(`Sector [${coord}]: Struck noise '${otherLetter}', survivor '${selectedLetter}'`);
+      logTerminal(`Sector [${coord}]: Struck '${otherLetter}', preserved '${selectedLetter}'`);
     }
 
     saveState();
@@ -363,47 +396,6 @@
     struckEl.classList.remove('selected');
   }
 
-  // Render 16 Secret Words Tracker
-  function renderWordsList() {
-    wordListGrid.innerHTML = '';
-    const knownWords = [
-      { id: 1, name: 'POSTPONE', dir: 'Col 0 Down' },
-      { id: 2, name: 'PEOPLE', dir: 'Row 0 Across' },
-      { id: 3, name: 'OAT', dir: 'Col 2 Down' },
-      { id: 4, name: 'SIT', dir: 'Row 2 Across' },
-      { id: 5, name: 'OPEN', dir: 'Row 5 Across' },
-      { id: 6, name: 'LOGIC', dir: 'Col 4 Down' },
-      { id: 7, name: 'ENVELOPE', dir: 'Col 5 Down' },
-      { id: 8, name: 'NANNY', dir: 'Col 3 Down' },
-      { id: 9, name: 'YELLOW', dir: 'Row 9 Across' },
-      { id: 10, name: 'PEN', dir: 'Row 6 Across' },
-      { id: 11, name: 'CLONE', dir: 'Row 4 Across' },
-      { id: 12, name: 'CANINE', dir: 'Col 7 Down' },
-      { id: 13, name: 'NAIL', dir: 'Col 9 Down' },
-      { id: 14, name: 'QUEEN', dir: 'Col 8 Down' },
-      { id: 15, name: 'PIT', dir: 'Row 4 Across' },
-      { id: 16, name: 'TEN', dir: 'Col 2 Down' }
-    ];
-
-    knownWords.forEach(w => {
-      const card = document.createElement('div');
-      card.className = 'word-card';
-      card.id = `word-card-${w.id}`;
-
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'word-name';
-      nameSpan.textContent = `${w.id}. ${w.name}`;
-
-      const dirSpan = document.createElement('span');
-      dirSpan.className = 'word-dir-tag';
-      dirSpan.textContent = w.dir;
-
-      card.appendChild(nameSpan);
-      card.appendChild(dirSpan);
-      wordListGrid.appendChild(card);
-    });
-  }
-
   // Update progress HUD & submit button state
   function updateProgress() {
     const answeredCount = Object.keys(userAnswers).length;
@@ -413,55 +405,12 @@
 
     // Enable submit button once team is logged in and at least some cells are answered
     submitBtn.disabled = !currentTeam || isSubmitted || answeredCount === 0;
-
-    // Check which words are fully deciphered
-    checkDecryptedWords();
   }
 
-  // Check words status
-  function checkDecryptedWords() {
-    const wordCoords = {
-      1: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0]], // POSTPONE
-      2: [[0,0],[0,1],[0,2],[0,3],[0,4],[0,5]],             // PEOPLE
-      3: [[0,2],[1,2],[2,2]],                               // OAT
-      4: [[2,0],[2,1],[2,2]],                               // SIT
-      5: [[5,0],[5,1],[5,2],[5,3]],                         // OPEN
-      6: [[0,4],[1,4],[2,4],[3,4],[4,4]],                   // LOGIC
-      7: [[0,5],[1,5],[2,5],[3,5],[4,5],[5,5],[6,5],[7,5]], // ENVELOPE
-      8: [[5,3],[6,3],[7,3],[8,3],[9,3]],                   // NANNY
-      9: [[9,3],[9,4],[9,5],[9,6],[9,7],[9,8]],             // YELLOW
-      10: [[6,5],[6,6],[6,7]],                              // PEN
-      11: [[4,4],[4,5],[4,6],[4,7],[4,8]],                  // CLONE
-      12: [[2,7],[3,7],[4,7],[5,7],[6,7],[7,7]],             // CANINE
-      13: [[5,9],[6,9],[7,9],[8,9]],                         // NAIL
-      14: [[1,8],[2,8],[3,8],[4,8],[5,8]],                   // QUEEN
-      15: [[4,0],[4,1],[4,2]],                              // PIT
-      16: [[4,2],[5,2],[6,2]]                               // TEN
-    };
-
-    let completeCount = 0;
-    for (const [id, coords] of Object.entries(wordCoords)) {
-      const card = document.getElementById(`word-card-${id}`);
-      const allSelected = coords.every(([r, c]) => !!userAnswers[`${r},${c}`]);
-      if (card) {
-        if (allSelected) {
-          card.classList.add('word-ready');
-          completeCount++;
-        } else {
-          card.classList.remove('word-ready');
-        }
-      }
-    }
-
-    const counter = document.getElementById('wordsDecryptedCounter');
-    if (counter) counter.textContent = `${completeCount} / 16 READY`;
-  }
-
-  // Timer Implementation (15 Minutes)
+  // Timer Implementation (10 Minutes)
   function startTimer() {
     if (isTimerStarted || isSubmitted) return;
     isTimerStarted = true;
-    logTerminal('15-Minute Countdown Matrix ENGAGED.', 'warn');
 
     timerInterval = setInterval(() => {
       timeRemaining--;
@@ -476,7 +425,7 @@
         clearInterval(timerInterval);
         timeRemaining = 0;
         updateTimerDisplay();
-        logTerminal('CRITICAL: 15-MINUTE TIME EXPIRED! Auto-transmitting decryption...', 'warn');
+        logTerminal('CRITICAL: 10-MINUTE TIME EXPIRED! Transmitting matrix...', 'warn');
         submitAnswers(true);
       }
     }, 1000);
@@ -497,7 +446,8 @@
     const payload = {
       team: currentTeam,
       answers: userAnswers,
-      timeRemaining: timeRemaining
+      timeRemaining: timeRemaining,
+      isTimerStarted: isTimerStarted
     };
     localStorage.setItem(`doom_session_${currentTeam.id}`, JSON.stringify(payload));
   }
@@ -513,6 +463,10 @@
         }
         renderGrid();
         updateTimerDisplay();
+
+        if (data.isTimerStarted && !isSubmitted) {
+          startTimer();
+        }
         logTerminal(`Restored active session for ${team.team_name}`);
       } catch (e) {
         console.error(e);
@@ -520,7 +474,7 @@
     }
   }
 
-  // Team Login Handler
+  // Team Login Handler: Step 1 (Register) -> Step 2 (Show Rules & Wait for OK)
   teamLoginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const teamName = teamNameInput.value.trim();
@@ -552,9 +506,20 @@
             timeTakenSeconds: data.submission.time_taken_seconds
           });
         } else {
-          restoreState(currentTeam);
-          startTimer();
-          logTerminal(`Authenticated: Unit ${currentTeam.team_name}`, 'success');
+          // Check if session was already active
+          const saved = localStorage.getItem(`doom_session_${currentTeam.id}`);
+          if (saved) {
+            restoreState(currentTeam);
+            if (!isTimerStarted) {
+              rulesModal.classList.add('show');
+            }
+          } else {
+            // New team: Show Rules Modal first!
+            rulesConfirmCheckbox.checked = false;
+            startTimerBtn.disabled = true;
+            rulesModal.classList.add('show');
+            logTerminal(`Unit authenticated: ${currentTeam.team_name}. Reviewing rules...`);
+          }
         }
       } else {
         alert(data.error || 'Login failed');
@@ -606,14 +571,13 @@
     }
   }
 
-  // Display Result Modal
+  // Display Result Modal (NO answers spoiled!)
   function showResultsModal(data) {
     const resultPoints = document.getElementById('resultPoints');
     const resultCorrect = document.getElementById('resultCorrect');
     const resultErrors = document.getElementById('resultErrors');
     const resultTime = document.getElementById('resultTime');
     const resultGrade = document.getElementById('resultGrade');
-    const revealedWordsList = document.getElementById('revealedWordsList');
 
     resultPoints.textContent = `+${data.score}`;
     resultCorrect.textContent = `${data.correctCount} / 59`;
@@ -636,13 +600,6 @@
       resultGrade.textContent = '> 8 ERRORS (INCOMPLETE)';
       resultGrade.className = 'stat-val text-red';
     }
-
-    // Display revealed words
-    const words = [
-      'POSTPONE', 'PEOPLE', 'OAT', 'SIT', 'OPEN', 'LOGIC', 'ENVELOPE', 'NANNY',
-      'YELLOW', 'PEN', 'CLONE', 'CANINE', 'NAIL', 'QUEEN', 'PIT', 'TEN'
-    ];
-    revealedWordsList.innerHTML = words.map(w => `<span class="word-tag">${w}</span>`).join('');
 
     resultModal.classList.add('show');
   }

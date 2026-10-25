@@ -1056,3 +1056,178 @@ h1.glitch-text {
   margin-bottom: 0.25rem;
   font-weight: 600;
 }
+
+/* Rules Modal & Checkbox Styling */
+.rules-modal-panel {
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.m-rule-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  border-left: 3px solid var(--doom-green);
+  padding: 0.65rem 0.85rem;
+  border-radius: 2px;
+}
+
+.m-rule-num {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--doom-green-bright);
+  font-size: 1rem;
+  min-width: 20px;
+}
+
+.m-rule-content {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.m-rule-content strong {
+  color: #fff;
+}
+
+.points-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 600px) {
+  .points-modal-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.p-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Custom Cyber Checkbox */
+.rules-confirmation-box {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid var(--doom-green);
+  padding: 0.9rem 1.1rem;
+  border-radius: 4px;
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.custom-checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.custom-checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  height: 22px;
+  width: 22px;
+  background-color: #070b0e;
+  border: 2px solid var(--doom-green);
+  border-radius: 3px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-checkbox-container:hover input ~ .checkmark {
+  background-color: rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 8px var(--doom-green);
+}
+
+.custom-checkbox-container input:checked ~ .checkmark {
+  background-color: var(--doom-green);
+  box-shadow: 0 0 12px var(--doom-green-bright);
+}
+
+.checkmark::after {
+  content: '';
+  display: none;
+  width: 6px;
+  height: 11px;
+  border: solid #000;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+  margin-bottom: 2px;
+}
+
+.custom-checkbox-container input:checked ~ .checkmark::after {
+  display: block;
+}
+
+.checkbox-label {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: #fff;
+  line-height: 1.35;
+}
+
+/* Tactical Intel Sidebar Styling */
+.intel-card-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.intel-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(11, 17, 23, 0.75);
+  border: 1px solid var(--titanium-border);
+  padding: 0.75rem 0.9rem;
+  border-radius: 2px;
+  text-align: left;
+}
+
+.intel-icon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.intel-text strong {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--doom-green-bright);
+  letter-spacing: 1px;
+  margin-bottom: 0.2rem;
+}
+
+.intel-text p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}

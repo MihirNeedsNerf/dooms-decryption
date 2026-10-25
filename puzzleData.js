@@ -105,5 +105,5 @@ module.exports = {
   ACTIVE_CELLS,
   calculateScore,
   TOTAL_ACTIVE_CELLS: 59,
-  TIME_LIMIT_SECONDS: 15 * 60
+  TIME_LIMIT_SECONDS: 10 * 60
 };

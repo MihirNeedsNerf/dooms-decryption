@@ -80,7 +80,7 @@ module.exports = async function handler(req, res) {
       return sendJson(res, 200, {
         success: true,
         activeCells: clientCells,
-        words: WORDS.map(w => ({ id: w.id, length: w.word.length, dir: w.dir, row: w.row, col: w.col })),
+        
         totalActive: TOTAL_ACTIVE_CELLS,
         timeLimitSeconds: TIME_LIMIT_SECONDS
       });
@@ -149,7 +149,7 @@ module.exports = async function handler(req, res) {
         totalActive: TOTAL_ACTIVE_CELLS,
         timeTakenSeconds: validTimeTaken,
         breakdown,
-        officialAnswerWords: WORDS.map(w => w.word)
+        timeLimitSeconds: TIME_LIMIT_SECONDS
       });
     }
 

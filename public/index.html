@@ -29,6 +29,9 @@
           <button id="soundToggleBtn" class="btn-hud btn-icon" title="Toggle Audio FX">
             <span id="soundIcon">🔊</span> <span class="btn-label">FX: ON</span>
           </button>
+          <button id="viewRulesBtn" class="btn-hud">
+            <span>📜 RULES & SCORING</span>
+          </button>
           <a href="leaderboard.html" target="_blank" class="btn-hud">
             <span>🏆 LEADERBOARD</span>
           </a>
@@ -65,24 +68,24 @@
         </div>
       </div>
 
-      <!-- Instructions & Points Banner -->
+      <!-- Quick Briefing Bar -->
       <div class="mission-briefing">
         <div class="briefing-header">
-          <span class="briefing-tag">MISSION OBJECTIVE</span>
-          <span class="rule-highlight">15 MINUTES ENCRYPTION LOCK</span>
+          <span class="briefing-tag">MISSION DIRECTIVE</span>
+          <span class="rule-highlight">10 MINUTES ENCRYPTION LOCK</span>
         </div>
         <div class="rules-grid">
           <div class="rule-item">
             <span class="r-num">1</span>
-            <span class="r-desc"><strong>Two Competing Letters:</strong> Each active cell contains two letters split diagonally.</span>
+            <span class="r-desc"><strong>Examine the Grid:</strong> Every square has two competing letters divided diagonally.</span>
           </div>
           <div class="rule-item">
             <span class="r-num">2</span>
-            <span class="r-desc"><strong>Strike Out the Noise:</strong> Click to draw a strike through the false letter and preserve the real one.</span>
+            <span class="r-desc"><strong>Strike Out the Noise:</strong> Click to strike out the incorrect letter and keep the secret letter.</span>
           </div>
           <div class="rule-item">
             <span class="r-num">3</span>
-            <span class="r-desc"><strong>Words Across & Down:</strong> The surviving letters form 16 secret meaningful words (>= 3 letters, no 2-letter words).</span>
+            <span class="r-desc"><strong>Reveal the Words:</strong> Surviving letters across and down form secret words (3+ letters, no 2-letter words).</span>
           </div>
           <div class="rule-item scoring-rule">
             <span class="r-num">⭐</span>
@@ -109,7 +112,7 @@
 
       <div class="hud-card timer-card">
         <div class="hud-label">DOOMSDAY COUNTDOWN</div>
-        <div id="timerDisplay" class="timer-value">15:00</div>
+        <div id="timerDisplay" class="timer-value">10:00</div>
         <div class="timer-progress-bar">
           <div id="timerProgress" class="timer-bar-fill"></div>
         </div>
@@ -133,7 +136,7 @@
       </div>
     </div>
 
-    <!-- Main Workspace: Crossword Grid + Decrypted Words Panel -->
+    <!-- Main Workspace: Crossword Grid + Tactical Intelligence Panel -->
     <main class="workspace-grid">
       <!-- Puzzle Board Column -->
       <section class="board-section">
@@ -143,7 +146,7 @@
             <span>LATVERIAN QUANTUM CIPHER MATRIX (10x10)</span>
           </div>
           <div class="board-legend">
-            <span class="legend-item"><span class="legend-box active-sample"></span> Solved Letter</span>
+            <span class="legend-item"><span class="legend-box active-sample"></span> Preserved Letter</span>
             <span class="legend-item"><span class="legend-box struck-sample"></span> Struck Noise</span>
             <span class="legend-item"><span class="legend-box barrier-sample"></span> Void Barrier</span>
           </div>
@@ -156,20 +159,39 @@
         </div>
 
         <div class="board-footer-tip">
-          <span>💡 <strong>Control Protocol:</strong> Click on either the Top-Left or Bottom-Right letter inside a square to strike out the unwanted letter. Click again to undo or change.</span>
+          <span>💡 <strong>Control Protocol:</strong> Click on either the Top-Left or Bottom-Right letter inside a square to strike out the decoy letter. Click the active letter to undo or change your choice.</span>
         </div>
       </section>
 
-      <!-- Secret Words Tracker Column -->
+      <!-- Tactical Intel & Diagnostics Sidebar (Zero answers spoiled!) -->
       <aside class="tracker-section">
         <div class="tracker-header">
-          <span class="tracker-title">16 CLASSIFIED PROTOCOLS</span>
-          <span id="wordsDecryptedCounter" class="badge-counter">0 / 16 READY</span>
+          <span class="tracker-title">TACTICAL INTEL</span>
+          <span id="decipherBadge" class="badge-counter">59 TARGETS</span>
         </div>
-        <p class="tracker-sub">Letters across and down must decrypt into these 16 words:</p>
         
-        <div id="wordListGrid" class="words-grid">
-          <!-- Rendered dynamically by app.js -->
+        <div class="intel-card-box">
+          <div class="intel-item">
+            <span class="intel-icon">🎯</span>
+            <div class="intel-text">
+              <strong>Secret Word Rule</strong>
+              <p>Every word hidden in the grid is <strong>3 letters or longer</strong>. There are strictly <strong>NO 2-letter words</strong> in the solved puzzle.</p>
+            </div>
+          </div>
+          <div class="intel-item">
+            <span class="intel-icon">⚡</span>
+            <div class="intel-text">
+              <strong>Bidirectional Decryption</strong>
+              <p>Valid words read horizontally from <strong>left to right (Across)</strong> and vertically from <strong>top to bottom (Down)</strong>.</p>
+            </div>
+          </div>
+          <div class="intel-item">
+            <span class="intel-icon">🛡️</span>
+            <div class="intel-text">
+              <strong>Single Transmission</strong>
+              <p>Once submitted or when the 10-minute timer reaches 00:00, your results are locked into the database for official scoring.</p>
+            </div>
+          </div>
         </div>
 
         <!-- Latverian System Diagnostics Box -->
@@ -178,7 +200,7 @@
           <div id="termLog" class="term-body">
             <p>> Awaiting operative authentication...</p>
             <p>> Grid power levels: NOMINAL (59 active nodes)</p>
-            <p>> Target frequency: DJS SIGAI PROTOCOL</p>
+            <p>> Time lock protocol: 10 MINUTES</p>
           </div>
         </div>
       </aside>
@@ -191,13 +213,13 @@
     </footer>
   </div>
 
-  <!-- Team Login / Registration Modal -->
+  <!-- Step 1: Team Login / Registration Modal -->
   <div id="loginModal" class="modal-backdrop show">
     <div class="modal-panel doom-panel">
       <div class="modal-header">
         <div class="modal-badge">OPERATIVE AUTHENTICATION</div>
         <h2>ENTER DOOMSDAY PROTOCOL</h2>
-        <p>Register your Team Unit to initiate the 15-minute decryption matrix.</p>
+        <p>Enter your Unit / Team details before viewing the mission rules.</p>
       </div>
 
       <form id="teamLoginForm" class="modal-form">
@@ -208,20 +230,85 @@
 
         <div class="form-group">
           <label for="membersInput">TEAM MEMBERS (Optional)</label>
-          <input type="text" id="membersInput" class="doom-input" placeholder="e.g. Tony, Reed, Bruce, Wanda" autocomplete="off" />
-        </div>
-
-        <div class="modal-warning-box">
-          <span class="warn-icon">⚠️</span>
-          <span><strong>ATTENTION:</strong> Once you engage the matrix, the 15-minute countdown starts immediately. Your unit gets one attempt.</span>
+          <input type="text" id="membersInput" class="doom-input" placeholder="e.g. Member 1, Member 2, Member 3" autocomplete="off" />
         </div>
 
         <div class="modal-actions">
-          <button type="submit" id="startMissionBtn" class="btn-doom-primary btn-block">
-            <span>INITIALIZE MATRIX & START TIMER</span>
+          <button type="submit" id="proceedToRulesBtn" class="btn-doom-primary btn-block">
+            <span>NEXT: REVIEW MISSION RULES ➔</span>
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Step 2: Mission Rules & Timer Engagement Modal -->
+  <div id="rulesModal" class="modal-backdrop">
+    <div class="modal-panel doom-panel rules-modal-panel">
+      <div class="modal-header">
+        <div class="modal-badge">CONFIDENTIAL MISSION PROTOCOL</div>
+        <h2>DOOM'S DECRYPTION: RULES</h2>
+        <p>Review the rules carefully. The 10-minute countdown starts upon confirmation.</p>
+      </div>
+
+      <div class="modal-rules-list">
+        <div class="m-rule-row">
+          <div class="m-rule-num">1</div>
+          <div class="m-rule-content">
+            <strong>Examine the Grid:</strong> Every active square contains two competing letters divided diagonally.
+          </div>
+        </div>
+        <div class="m-rule-row">
+          <div class="m-rule-num">2</div>
+          <div class="m-rule-content">
+            <strong>Strike Out the Noise:</strong> Click on the incorrect letter in each square to delete it with a strike line and preserve the real letter.
+          </div>
+        </div>
+        <div class="m-rule-row">
+          <div class="m-rule-num">3</div>
+          <div class="m-rule-content">
+            <strong>Reveal the Real Words:</strong> The remaining letters across and down the grid form real meaningful words.
+          </div>
+        </div>
+        <div class="m-rule-row">
+          <div class="m-rule-num">4</div>
+          <div class="m-rule-content">
+            <strong>Important Word Rule:</strong> All secret words are <strong>3 letters or longer</strong> (there are <strong>NO 2-letter words</strong> in the solved grid).
+          </div>
+        </div>
+        <div class="m-rule-row">
+          <div class="m-rule-num">5</div>
+          <div class="m-rule-content">
+            <strong>Time Limit:</strong> You have exactly <strong>10 minutes</strong> to finish the entire grid.
+          </div>
+        </div>
+        <div class="m-rule-row">
+          <div class="m-rule-num">⭐</div>
+          <div class="m-rule-content">
+            <strong>Official Points System:</strong>
+            <div class="points-modal-grid">
+              <div class="p-badge-item"><span class="pts-badge pts-15">+15 PTS</span> Zero errors (All words correct)</div>
+              <div class="p-badge-item"><span class="pts-badge pts-10">+10 PTS</span> 5 or less incorrect words/letters</div>
+              <div class="p-badge-item"><span class="pts-badge pts-5">+5 PTS</span> 6 to 8 incorrect words/sections</div>
+              <div class="p-badge-item"><span class="pts-badge pts-0">+0 PTS</span> More than 8 errors or incomplete</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rules-confirmation-box">
+        <label class="custom-checkbox-container">
+          <input type="checkbox" id="rulesConfirmCheckbox" />
+          <span class="checkmark"></span>
+          <span class="checkbox-label">I have read and understood all instructions. I am ready to start the <strong>10-minute timer</strong>.</span>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="startTimerBtn" class="btn-doom-primary btn-block" disabled>
+          <span>⚡ OK — ENGAGE 10-MINUTE TIMER</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -259,25 +346,17 @@
         </div>
       </div>
 
-      <div class="result-words-summary">
-        <div class="summary-title">VERIFIED WORDS REVEALED:</div>
-        <div id="revealedWordsList" class="summary-tags">
-          <!-- Populated by JS -->
-        </div>
-      </div>
-
       <div class="modal-actions result-actions">
         <a href="leaderboard.html" target="_blank" class="btn-doom-primary">
           <span>VIEW LIVE LEADERBOARD</span>
         </a>
         <button id="closeResultModalBtn" class="btn-hud">
-          <span>INSPECT SOLVED GRID</span>
+          <span>CLOSE & VIEW GRID</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Audio elements generated via Web Audio API -->
   <script src="app.js"></script>
 </body>
 </html>
